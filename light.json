@@ -1,0 +1,64 @@
+{
+    "lights": {
+        "1": {
+                "state": {
+                    "on": false,
+                    "bri": 1,
+                    "hue": 33761,
+                    "sat": 254,
+                    "xy": [
+                        0.3171,
+                        0.3366
+                    ],
+                    "ct": 159,
+                    "colormode": "xy",
+                    "reachable": true
+                },
+                "type": "Extended color light",
+                "name": "Hue color lamp 7",
+                "modelid": "LCT007"
+        },
+        "2": {
+            "state": {
+                "on": true,
+                "bri": 1,
+                "hue": 3237,
+                "sat": 127,
+                "xy": [
+                    0.3272,
+                    0.1325
+                ],
+                "ct": 140,
+                "colormode": "xy",
+                "reachable": true
+            },
+            "type": "Extended color light",
+            "name": "Hue color lamp 8",
+            "modelid": "LCT007"
+        },
+    "groups" : {
+        "1": {
+            "name": "Group 1",
+            "lights": [
+                "1",
+                "2"
+            ],
+            "type": "LightGroup",
+            "action": {
+                "on": false,
+                "bri": 254,
+                "hue": 10000,
+                "sat": 254,
+                "effect": "none",
+                "xy": [
+                    0.5,
+                    0.5
+                ],
+                "ct": 250,
+                "alert": "select",
+                "colormode": "ct"
+            }
+        }
+    }
+    }
+}

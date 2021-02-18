@@ -1,6 +1,14 @@
 import flask
 from flatten_dict import flatten
 import json_resources.sample_responses as sample_responses
+import os
+
+folder = "api/logs"
+
+path = "./{}".format(folder)
+
+if not os.path.exists(path):
+    os.makedirs(path)
 
 USERNAME = "root"
 ID = "1"
@@ -125,6 +133,7 @@ def get_timestamp() -> str:
 
 if __name__ == "__main__":
     import logging
-    logging.basicConfig(filename="api/logs/log_{}.txt".format(get_timestamp()), level=logging.DEBUG)
+
+    logging.basicConfig(filename="{}/log_{}.txt".format(folder, get_timestamp()), level=logging.DEBUG)
 
     app.run()

@@ -1,8 +1,9 @@
 import flask
-from flatten_dict import flatten
 import json_resources.sample_responses as sample_responses
-import os
+from json_handler import config_handler
 from flask_cors import CORS
+
+USERNAME = "root"
 
 port = 8080
 
@@ -10,71 +11,73 @@ folder = "api/logs"
 
 path = "./{}".format(folder)
 
-if not os.path.exists(path):
-    os.makedirs(path)
-
-USERNAME = "root"
-ID = "1"
-
 app = flask.Flask(__name__)
 
 CORS(app)
 
+jh = config_handler()
+
+@app.route("/", methods=["HEAD"])
+def ping():
+    return flask.make_response("", 200)
+
 ## LIGHTS
 
-# INDEX
+# INDEX TODO: DONE
 @app.route("/{}/lights".format(USERNAME), methods=["GET"])
 def lights_all():
-    lights = sample_responses.all_lights
+    lights = jh.get_lights_all()
     return flask.jsonify(lights)
 
-# SHOW
-@app.route("/{}/lights/{}".format(USERNAME, ID), methods=["GET"])
-def light():
-    light = sample_responses.test_light
+# SHOW TODO: DONE
+@app.route("/{}/lights/<id>".format(USERNAME), methods=["GET"])
+def light(id):
+    light = jh.get_light_by_id(id)
     return flask.jsonify(light)
 
-# UPDATE
-@app.route("/{}/lights/{}/state".format(USERNAME, ID), methods=["PUT"])
-def set_state():
+# UPDATE TODO: DONE
+@app.route("/{}/lights/<id>/state".format(USERNAME), methods=["PUT"])
+def set_state(id):
     state_keys = sample_responses.actions
 
     data = flask.request.get_json()
     request_keys = data.keys()
     
     if check_keys(request_keys, state_keys):
+        jh.set_state_light(id, data)
         res = flask.make_response(flask.jsonify({"message": "Value Changed"}), 201)
     else:
         res = flask.make_response(flask.jsonify({"message": "Keys not Matching"}), 400)
 
     return res
 
-# CREATE
+# CREATE TODO: DONE
 @app.route("/{}/lights".format(USERNAME), methods=["POST"])
 def search():
     return flask.make_response(flask.jsonify({ "success": { "/lights": "Searching for new devices" }}))
 
-# DELETE
-@app.route("/{}/lights/{}".format(USERNAME, ID), methods=["DELETE"])
-def delete_light():
+# DELETE TODO: maybe implement that the delete also deletes it out of the group
+@app.route("/{}/lights/<id>".format(USERNAME), methods=["DELETE"])
+def delete_light(id):
+    jh.remove_light(id)
     return flask.make_response(flask.jsonify({}))
 
 ## ROOMS
 
-# INDEX
+# INDEX TODO: DONE
 @app.route("/{}/groups".format(USERNAME), methods=["GET"])
 def groups_all():
-    groups = sample_responses.all_groups
-    return flask.jsonify(groups)
-
-# SHOW
-@app.route("/{}/groups/{}".format(USERNAME, ID), methods=["GET"])
-def group():
-    group = sample_responses.test_group
+    groups = jh.get_groups_all()
     return flask.jsonify(group)
 
-# UPDATE
-@app.route("/{}/groups/{}/action".format(USERNAME, ID), methods=["PUT"])
+# SHOW TODO: DONE
+@app.route("/{}/groups/<id>".format(USERNAME), methods=["GET"])
+def group(id):
+    group = jh.get_group_by_id(id)
+    return flask.jsonify(group)
+
+# UPDATE TODO: DONE
+@app.route("/{}/groups/<id>/action".format(USERNAME), methods=["PUT"])
 def set_action():
     state_keys = sample_responses.actions
 
@@ -82,6 +85,7 @@ def set_action():
     request_keys = data.keys()
     
     if check_keys(request_keys, state_keys):
+        jh.set_state_group(id, data)
         res = flask.make_response(flask.jsonify({"message": "Value Changed"}), 201)
     else:
         res = flask.make_response(flask.jsonify({"message": "Keys not Matching"}), 400)
@@ -89,7 +93,7 @@ def set_action():
     return res
 
 # CREATE
-# CREATE GROUP
+# CREATE GROUP TODO: implement changing dict logic
 @app.route("/{}/groups".format(USERNAME), methods=["POST"])
 def create_group():
     state_keys = sample_responses.group_keys
@@ -102,8 +106,8 @@ def create_group():
         res = flask.make_response(flask.jsonify({"message": "Keys not Matching"}), 400)
 
     return res
-# ADD TO GROUP
-@app.route("/{}/groups/{}".format(USERNAME, ID), methods=["PUT"])
+# ADD TO GROUP TODO: implement changing dict logic AND check if its ok
+@app.route("/{}/groups/<id>".format(USERNAME), methods=["PUT"])
 def update_group():
     state_keys = sample_responses.group_keys
     data = flask.request.get_json()
@@ -117,15 +121,10 @@ def update_group():
     return res
 
 # DELETE
-@app.route("/{}/groups/{}".format(USERNAME, ID), methods=["DELETE"])
-def delete():
+@app.route("/{}/groups/<id>".format(USERNAME), methods=["DELETE"])
+def delete(id):
+    jh.remove_group(id)
     return flask.make_response(flask.jsonify({}))
-
-
-# INDEX ROUTE
-@app.route("/", methods=["GET"])
-def index():
-    return flask.make_response("/", 200)
 
 ## FUNCTION
 
@@ -143,7 +142,6 @@ def get_timestamp() -> str:
 
 if __name__ == "__main__":
     import logging
-
     logging.basicConfig(filename="{}/log_{}.txt".format(folder, get_timestamp()), level=logging.DEBUG)
 
     app.run(host = "0.0.0.0", port = port, debug = True)

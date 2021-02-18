@@ -35,7 +35,8 @@
             "type": "Extended color light",
             "name": "Hue color lamp 8",
             "modelid": "LCT007"
-        },
+        }
+    },
     "groups" : {
         "1": {
             "name": "Group 1",
@@ -59,6 +60,5 @@
                 "colormode": "ct"
             }
         }
-    }
     }
 }

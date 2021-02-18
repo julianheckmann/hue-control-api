@@ -9,5 +9,7 @@ RUN pip install -r ./requirements.txt
 
 EXPOSE 8080
 
+WORKDIR .
+
 ENTRYPOINT ["python"]
 CMD ["api.py"]

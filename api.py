@@ -2,6 +2,7 @@ import flask
 from flatten_dict import flatten
 import json_resources.sample_responses as sample_responses
 import os
+from flask_cors import CORS
 
 port = 8080
 
@@ -16,7 +17,8 @@ USERNAME = "root"
 ID = "1"
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+
+CORS(app)
 
 ## LIGHTS
 

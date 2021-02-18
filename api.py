@@ -3,6 +3,8 @@ from flatten_dict import flatten
 import json_resources.sample_responses as sample_responses
 import os
 
+port = 8080
+
 folder = "api/logs"
 
 path = "./{}".format(folder)
@@ -117,6 +119,12 @@ def update_group():
 def delete():
     return flask.make_response(flask.jsonify({}))
 
+
+# INDEX ROUTE
+@app.route("/", methods=["GET"])
+def index():
+    return flask.make_response("/", 200)
+
 ## FUNCTION
 
 def check_keys(request, all):
@@ -136,4 +144,4 @@ if __name__ == "__main__":
 
     logging.basicConfig(filename="{}/log_{}.txt".format(folder, get_timestamp()), level=logging.DEBUG)
 
-    app.run()
+    app.run(host = "0.0.0.0", port = port, debug = True)
